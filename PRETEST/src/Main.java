@@ -1,40 +1,75 @@
 public class Main {
     public static void main(String[] args) {
-        PengelolaPerpustakaan perpus = new PengelolaPerpustakaan();
-        
         Buku bukuSains = new Buku();
-        bukuSains.judul = "Belajar SOLID Java";
-        bukuSains.hariKeterlambatan = 5; 
+        bukuSains.judul = "Pemrograman Java Lanjut";
+        bukuSains.hariKeterlambatan = 5;
+
+        LayananDenda kalkulatorStandar = new KalkulatorDendaStandar();
+        PemformatStruk formatTabel = new FormatStrukTabel();
+
+        PengelolaPerpustakaan perpus = new PengelolaPerpustakaan(kalkulatorStandar, formatTabel);
 
         String hasilStruk = perpus.prosesPengembalian(bukuSains);
         System.out.println(hasilStruk);
     }
 }
 
-class Buku {
-    public String judul;
-    public int hariKeterlambatan;
+
+interface LayananDenda {
+    double hitungDenda(int hariKeterlambatan);
 }
 
-class KalkulatorDenda {
-    public double hitung(int hariKeterlambatan) {
-        return hariKeterlambatan * 2000.0;
+interface PemformatStruk {
+    String buatTampilan(Buku buku, double totalDenda);
+}
+
+
+class KalkulatorDendaStandar implements LayananDenda {
+    @Override
+    public double hitungDenda(int hariKeterlambatan) {
+        return hariKeterlambatan > 0 ? hariKeterlambatan * 2000.0 : 0.0;
     }
 }
 
-class FormatStrukTabel {
+class KalkulatorDendaFlat implements LayananDenda {
+    @Override
+    public double hitungDenda(int hariKeterlambatan) {
+        return hariKeterlambatan > 0 ? 15000.0 : 0.0; 
+    }
+}
+
+class FormatStrukTabel implements PemformatStruk {
+    @Override
     public String buatTampilan(Buku buku, double totalDenda) {
         return "=====================================\n" +
                "|            STRUK DENDA            |\n" +
                "=====================================\n" +
                "| Judul Buku : " + buku.judul + "\n" +
-               "| Total Denda: Rp " + totalDenda + "\n";
+               "| Total Denda: Rp " + totalDenda + "\n" +
+               "=====================================";
     }
 }
 
+class FormatStrukJson implements PemformatStruk {
+    @Override
+    public String buatTampilan(Buku buku, double totalDenda) {
+        return "{\n  \"judul\": \"" + buku.judul + "\",\n  \"denda\": " + totalDenda + "\n}";
+    }
+}
+
+class Buku {
+    public String  judul;
+    public int hariKeterlambatan;
+}
+
 class PengelolaPerpustakaan {
-    private KalkulatorDenda kalkulator = new KalkulatorDenda();
-    private FormatStrukTabel pemformat = new FormatStrukTabel();
+    private LayananDenda layananDenda;
+    private PemformatStruk pemformatStruk;
+
+    public PengelolaPerpustakaan(LayananDenda layananDenda, PemformatStruk pemformatStruk) {
+        this.layananDenda = layananDenda;
+        this.pemformatStruk = pemformatStruk;
+    }
 
     public Buku cariBuku(String judul) {
         return new Buku(); 
@@ -44,7 +79,7 @@ class PengelolaPerpustakaan {
     }
 
     public String prosesPengembalian(Buku buku) {
-        double denda = kalkulator.hitung(buku.hariKeterlambatan);
-        return pemformat.buatTampilan(buku, denda);
+        double denda = layananDenda.hitungDenda(buku.hariKeterlambatan);
+        return pemformatStruk.buatTampilan(buku, denda);
     }
 }
