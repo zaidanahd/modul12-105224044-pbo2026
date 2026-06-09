@@ -1,4 +1,4 @@
-public class KeretaPenumpang implements Kereta, DapatDipesan {
+public class KeretaPenumpang implements DapatDipesan {
     private String kodeKereta;
     private String namaKereta;
     private String rute;
@@ -9,18 +9,5 @@ public class KeretaPenumpang implements Kereta, DapatDipesan {
     }
     public void setSisaKursi(int sisaKursi) { 
         this.sisaKursi = sisaKursi; 
-    }
-    
-    @Override
-    public String getKodeKereta() { 
-        return kodeKereta; 
-    }
-    @Override
-    public String getNamaKereta() { 
-        return namaKereta; 
-    }
-    @Override
-    public String getRute() { 
-        return rute; 
     }
 }
